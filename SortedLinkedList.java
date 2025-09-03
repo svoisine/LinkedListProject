@@ -1,12 +1,36 @@
+/*
+ *  Class SortedLinkedList
+ * 
+ *  This class creates SortedLinkedList Object as well
+ *  as creates methods that can be called on the lists.
+ * 
+ *  Name: Seth Voisine
+ *  UGA ID: 81196637
+ *  Date: 09/02/2025
+ */
 public class SortedLinkedList {
     private NodeType head;
     private NodeType currentPos;
 
+    /*
+     * The method constructs the list object.
+     * 
+     * param - none
+     * 
+     * @return - none
+     */
     public SortedLinkedList() {
         this.head = null;
         this.currentPos = null;
     }
 
+    /*
+     * This method finds the length of the list.
+     * 
+     * param - none
+     * 
+     * @return - int length
+     */
     public int getLength() {
         // base case of len of 0
         if (head == null) {
@@ -23,6 +47,14 @@ public class SortedLinkedList {
         return len;
     }
 
+    /*
+     * This method inserts the item into the list while
+     * maintaining the sorted order.
+     * 
+     * param - ItemType item
+     * 
+     * @return - void
+     */
     public void insertItem(ItemType item) {
 
         // if list is empty
@@ -34,7 +66,7 @@ public class SortedLinkedList {
 
         // first value is a duplicate or insert first value
         if (item.getValue() == head.info.getValue()) {
-            System.err.println("Sorry. You cannot insert the duplicate item");
+            System.err.println("Item Already Exists");
             return;
         } else if (item.getValue() < head.info.getValue()) {
             NodeType holder = new NodeType();
@@ -55,7 +87,7 @@ public class SortedLinkedList {
 
         // check duplicate at insert point
         if (currNode != null && item.getValue() == currNode.info.getValue()) {
-            System.err.println("Sorry. You cannot insert the duplicate item");
+            System.err.println("Item Already Exists");
             return;
         }
 
@@ -67,6 +99,14 @@ public class SortedLinkedList {
 
     }
 
+    /*
+     * This method deletes item from the linked list
+     * while maintaing the original sorted order.
+     * 
+     * param - ItemType item
+     * 
+     * @return - void
+     */
     public void deleteItem(ItemType item) {
 
         // if list is empty
@@ -90,21 +130,34 @@ public class SortedLinkedList {
             prev = currNode;
             currNode = currNode.next;
         }
-
+        System.out.println("Original list : " + this);
         // check duplicate at insert point
         if (currNode == null) {
-            System.out.println("Item not found");
+            System.out.println("The item is not present in the list");
+            System.out.println("New list : " + this);
             return;
         }
 
         prev.next = currNode.next;
+        System.out.println("New list : " + this);
 
     }
 
+    /*
+     * This method searches the list for the location of
+     * item and returns the index of the item in the list.
+     * 
+     * param - ItemType item
+     * 
+     * @return - int index
+     */
     public int searchItem(ItemType item) {
-        int index = 0;
+        int index = 1;
         NodeType currNode = head;
 
+        if (currNode == null) {
+            return -1;
+        }
         // this loop also handles the base case of an empty list
         while (currNode != null) {
             if (item.getValue() == currNode.info.getValue()) {
@@ -114,10 +167,19 @@ public class SortedLinkedList {
             index++;
         }
 
-        System.out.println("Item Not Found");
-        return -1; // return -1 since we did not find the item
+        System.out.println("Item is not present in the list");
+        return 0; // return -1 since we did not find the item
     }
 
+    /*
+     * This method gets the next item in the list and returns
+     * the number that the item is. If it gets to the end it
+     * resets back to the beginning.
+     * 
+     * param - none
+     * 
+     * @return - ItemType currentPos.next
+     */
     public ItemType getNextItem() {
         // case when list is empty
         if (head == null) {
@@ -130,7 +192,6 @@ public class SortedLinkedList {
             currentPos = head;
         } else {
             if (currentPos.next == null) {
-                System.out.println("The end of the list has been reached");
                 currentPos = head;
             } else {
                 currentPos = currentPos.next;
@@ -140,25 +201,182 @@ public class SortedLinkedList {
         return currentPos.info;
     }
 
+    /*
+     * Resets currentPos back to the first item in the list.
+     * 
+     * param - none
+     * 
+     * @return - void
+     */
     public void resetList() {
         currentPos = null;
     }
 
-    public void margeList(SortedLinkedList secondList) {
-        // merge from this.head and secondList.head, maintaining the sorted order, print
-        // after merging
-        // only have one of a duplicated number added to the list
-        // doesn't change original list
+    /*
+     * This method takes the secondList and then merges
+     * both the original list and the secondList together.
+     * If two items are the same it just takes one of the items.
+     * This method maintains a sorted order and creates a new
+     * list as to not mess with the original list or the second list.
+     * 
+     * param - SortedLinkedList secondList
+     * 
+     * @return - void
+     */
+    public void mergeList(SortedLinkedList secondList) {
+
+        NodeType firstSearch = head;
+        NodeType secondSearch = secondList.head;
+
+        SortedLinkedList merged = new SortedLinkedList();
+
+        // loop through both list and add each variable to a new merged list
+        while (firstSearch != null && secondSearch != null) {
+            if (firstSearch.info.getValue() < secondSearch.info.getValue()) {
+                ItemType item = new ItemType();
+                item.initialize(firstSearch.info.getValue());
+                merged.insertItem(item);
+                firstSearch = firstSearch.next;
+            } else if (firstSearch.info.getValue() > secondSearch.info.getValue()) {
+                ItemType item = new ItemType();
+                item.initialize(secondSearch.info.getValue());
+                merged.insertItem(item);
+                secondSearch = secondSearch.next;
+            } else {
+                ItemType item = new ItemType();
+                item.initialize(firstSearch.info.getValue());
+                merged.insertItem(item);
+                firstSearch = firstSearch.next;
+                secondSearch = secondSearch.next;
+            }
+        }
+
+        // add whatever values were left out from remaining lists
+        if (firstSearch != null) {
+            while (firstSearch != null) {
+                ItemType item = new ItemType();
+                item.initialize(firstSearch.info.getValue());
+                merged.insertItem(item);
+                firstSearch = firstSearch.next;
+            }
+        } else if (secondSearch != null) {
+            while (secondSearch != null) {
+                ItemType item = new ItemType();
+                item.initialize(secondSearch.info.getValue());
+                merged.insertItem(item);
+                secondSearch = secondSearch.next;
+            }
+        }
+
+        System.out.print("The list 1: ");
+        System.out.println(this);
+        System.out.print("The list 2: ");
+        System.out.println(secondList);
+        System.out.print("Merged list: ");
+        System.out.println(merged);
+
     }
 
+    /*
+     * This method goes through the original list and deletes
+     * everyother item from the list.
+     * 
+     * param - none
+     * 
+     * @return - void
+     */
     public void deleteAlternate() {
-        // delete every other number in the list, maintaining the sorted order
-        // changes the original list
+
+        System.out.print("Original list: ");
+        System.out.println(this);
+        if (head == null) {
+            System.out.println("The list is empty");
+            System.out.print("Modified list: ");
+            System.out.println(this);
+            return;
+        }
+        // have 3 holding nodes
+        // currNode to iterate; newList to hold new variables; newStart to maintain the
+        // head of the new list
+        NodeType currNode = head;
+        NodeType newList = currNode;
+        NodeType newStart = newList;
+
+        while (currNode != null && currNode.next != null) {
+            currNode = currNode.next.next;
+            newList.next = currNode;
+            newList = newList.next;
+        }
+        // make head equal to the start of the new list
+        head = newStart;
+        System.out.print("Modified list: ");
+        System.out.println(this);
     }
 
+    /*
+     * This method takes the secondList and then compares it's values
+     * to the original list. While maintaining their sorted order, only
+     * matching values from both lists are added to a new intersect list.
+     * Once finished the intersect list is printed. A new list is created
+     * as to not mess with the original list or the second list.
+     * 
+     * param - SortedLinkedList secondList
+     * 
+     * @return - void
+     */
     public void intersection(SortedLinkedList secondList) {
-        // print a new list of only values that are the same from both this.head and
-        // secondList.head
-        // doesn't change the original list
+
+        NodeType firstSearch = head;
+        NodeType secondSearch = secondList.head;
+
+        SortedLinkedList intersect = new SortedLinkedList();
+
+        // loop through both lists and only add values that match to intersect list
+        while (firstSearch != null && secondSearch != null) {
+            if (firstSearch.info.getValue() < secondSearch.info.getValue()) {
+                firstSearch = firstSearch.next;
+            } else if (firstSearch.info.getValue() > secondSearch.info.getValue()) {
+                secondSearch = secondSearch.next;
+            } else {
+                ItemType item = new ItemType();
+                item.initialize(firstSearch.info.getValue());
+                intersect.insertItem(item);
+                firstSearch = firstSearch.next;
+                secondSearch = secondSearch.next;
+            }
+        }
+
+        System.out.print("List 1: ");
+        System.out.println(this);
+        System.out.print("List 2: ");
+        System.out.println(secondList);
+        System.out.print("Intersection of lists: ");
+        System.out.println(intersect);
+    }
+
+    @Override
+    /*
+     * This is a helper method that allows me to quickly call <someList>.toString()
+     * and print the list without having to reloop through the items everytime
+     * I want to print a list.
+     * 
+     * param - none
+     * 
+     * @return - none
+     */
+    public String toString() {
+        // use a StringBuilder object because it is mutable and the size change without
+        // taking up more memory
+
+        StringBuilder string = new StringBuilder();
+
+        NodeType currNode = head;
+
+        while (currNode != null) {
+            string.append(currNode.info.getValue()).append(" ");
+            currNode = currNode.next;
+        }
+
+        return string.toString();
     }
 }
